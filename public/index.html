@@ -1,0 +1,135 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Вход</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-image: url('data/back.jpg');
+                background-size: cover; 
+                background-position: center;
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+            }
+            .container {
+                background: rgba(255, 255, 255, 0.9); 
+                border-radius: 15px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                padding: 30px;
+                width: 320px; 
+                text-align: center;
+            }
+            .todo-title {
+                font-size: 28px; 
+                font-weight: bold;
+                color: rgb(24, 40, 99); 
+                margin: 10px 0;
+            }
+            h1 {
+                font-size: 24px; 
+                color: rgb(106, 128, 214); 
+                margin: 10px 0;
+            }
+            p, a {
+                margin: 10px 0;
+                color: rgb(106, 128, 214); 
+            }
+            input[type="text"], 
+            input[type="password"] {
+                padding: 10px;
+                border: 1px solid rgb(24, 40, 99); 
+                border-radius: 5px;
+                width: 90%;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+                transition: border-color 0.3s ease;
+                margin-bottom: 10px; 
+                color: rgb(24, 40, 99);
+            }
+            button {
+                background-color: rgb(24, 40, 99); 
+                color: white; 
+                border: none;
+                border-radius: 5px;
+                padding: 10px;
+                width: 90%; 
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                transition: background-color 0.3s ease;
+                margin-top: 10px;
+            }
+            button:hover {
+                background-color: rgb(106, 128, 214); 
+            }
+            a:hover {
+                color: rgb(24, 40, 99);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="todo-title">TO-DO LIST</div>
+            <h1>ВХОД</h1>
+            <form id="loginForm">
+                <p>Логин:</p>
+                <input id="login" type="text" placeholder="Введите логин" required>
+
+                <p>Пароль:</p>
+                <input id="password" type="password" placeholder="Введите пароль" required>
+                
+                <p>
+                    <button type="button" id="togglePassword">👁️</button>
+                </p>
+
+                <p>
+                    <button type="submit">Войти</button>
+                </p>
+                <p><a href="sign-in.html" style="text-decoration:none">Не зарегистрированы?</a></p>
+            </form>
+        </div>
+        <script>
+            document.getElementById('togglePassword').addEventListener('click', (event) => {
+                const passwordInput = document.getElementById('password');
+                passwordInput.type = passwordInput.type == 'password' ? 'text' : 'password';
+            });
+
+            document.getElementById('loginForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const login = document.getElementById('login').value;
+                const password = document.getElementById('password').value;
+
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ login, password })
+                    
+                })
+
+                const result = await response.json(); 
+                
+                if (result.success) {
+                    alert('Авторизация успешна!');
+                    const user = localStorage.setItem('login', login);
+                    window.location.href = 'main.html';
+
+                    const response = await fetch('/main', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({login}), 
+                    });
+                } 
+                else {
+                    alert(result.message);
+                }
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,161 @@
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Регистрация</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-image: url('data/back.jpg');
+                background-size: cover; 
+                background-position: center;
+                font-family: 'Arial', sans-serif;
+                margin: 0;
+            }
+            .container {
+                background: rgba(255, 255, 255, 0.9); 
+                border-radius: 15px;
+                box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+                padding: 30px;
+                width: 320px; 
+                text-align: center;
+            }
+            .todo-title {
+                font-size: 28px; 
+                font-weight: bold;
+                color: rgb(24, 40, 99); 
+                margin: 10px 0;
+            }
+            h1 {
+                font-size: 24px; 
+                color: rgb(24, 40, 99); 
+                margin: 10px 0;
+            }
+            p, a {
+                margin: 10px 0;
+                color: rgb(106, 128, 214); 
+            }
+            input[type="text"], 
+            input[type="password"] {
+                padding: 10px;
+                border: 1px solid rgb(24, 40, 99); 
+                border-radius: 5px;
+                width: 90%;
+                box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+                transition: border-color 0.3s ease;
+                margin-bottom: 10px; 
+                color: rgb(24, 40, 99);
+                border-width: 1.7px;
+            }
+            input[type="text"]::placeholder, 
+            input[type="password"]::placeholder {
+                color:rgb(185,185,247)
+            }
+            button {
+                background-color: rgb(24, 40, 99); 
+                color: white; 
+                border: none;
+                border-radius: 5px;
+                padding: 10px;
+                width: 90%; 
+                cursor: pointer;
+                box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+                transition: background-color 0.3s ease;
+                margin-top: 10px;
+            }
+            button:hover {
+                background-color: rgb(106, 128, 214); 
+            }
+            a:hover {
+                color: rgb(24, 40, 99);
+            }
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="todo-title">TO-DO LIST</div>
+            <h1>РЕГИСТРАЦИЯ</h1>
+            <form id="registrationForm">
+                <p>Логин:</p>
+                <input id="login" type="text" placeholder="Введите логин" required>
+
+                <p>Пароль:</p>
+                <input id="password1" type="password" placeholder="Введите пароль" required>
+                
+                <p>Повторите пароль:</p>
+                <input id="password2" type="password" placeholder="Повторите пароль" required>
+
+                <p>
+                    <button type="button" id="togglePassword">👁️</button>
+                </p>
+
+                <p>
+                    <button type="submit">Зарегистрироваться</button>
+                </p>
+                <p><a href="index.html" style="text-decoration:none">Уже зарегистрированы?</a></p>
+            </form>
+        </div>
+
+        <script>
+            
+            //видимость пароля
+            document.getElementById('togglePassword').addEventListener('click', (event) => {
+                const passwordInput1 = document.getElementById('password1');
+                const passwordInput2 = document.getElementById('password2');
+                if (passwordInput1.type == 'password') {
+                    passwordInput1.type = 'text';
+                    passwordInput2.type = 'text';
+                } else {
+                    passwordInput1.type = 'password';
+                    passwordInput2.type = 'password';
+                }
+            });
+            
+            //отправка данных на монгу
+            document.getElementById('registrationForm').addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const login = document.getElementById('login').value;
+                const password = document.getElementById('password1').value;
+                const password2 = document.getElementById('password2').value;
+                const tasks = [];
+
+                if(password != password2) {
+                    alert("Пароли должны совпадать!");
+                    return;
+                }
+                if (password.length < 8){
+                    alert("Пароль должен содержать более 8 символов!");
+                    return;
+                }
+                if (/^[A-Za-z0-9]*$/.test(login) == false){
+                    alert("Логин должен содержать только буквы и цифры! (без кириллицы и специальных символов)");
+                    return;
+                }
+                if (/^[A-Za-z0-9]*$/.test(password) == false){
+                    alert("Пароль должен содержать только буквы и цифры! (без кириллицы и специальных символов)");
+                    return;
+                }
+
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ login, password, tasks}),
+                });
+
+                const result = await response.json();
+                if (result.success) {
+                    alert('Регистрация успешна!');
+                    window.location.href = 'index.html';
+                } else {
+                    alert(result.message);
+                }
+            });
+        </script>
+    </body>
+</html>
