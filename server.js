@@ -2,9 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 
-const secretKey = 'U8#jKs$!sF3d@zT5%kR9^nY1&xQ0*Lw4$3fjHp8XkZ@TcL^az2@yF6bR9*wH8!mLt';
 const app = express();
 const PORT = process.env.PORT || 3000;
 
@@ -110,3 +108,4 @@ app.post('/delete', async (req, res) => {
 
 
 app.listen(PORT)
+
